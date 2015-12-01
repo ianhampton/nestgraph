@@ -33,6 +33,9 @@ body {
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script>
 
+// C or F
+var units = "C";
+
 // change this if you want to limit the amount of data pulled
 var hours = 24 * 7;
 
@@ -152,10 +155,13 @@ d3.tsv("fetch.php?hrs=" + hours, function(error, data) {
     var x = {
       name: name,
       values: data.map(function(d) {
-	if (name == "heating") 
-          return { date: d.date, val: +d[name] + 60 };
-	else
+	    if (name == "heating") {
+          var offset = (units === "C") ? 5 : 60;
+          return { date: d.date, val: +d[name] + offset };
+        }
+	    else {
           return { date: d.date, val: +d[name] };
+        }
       })
     };
     console.log(x);
@@ -188,7 +194,7 @@ d3.tsv("fetch.php?hrs=" + hours, function(error, data) {
     .attr("y", 6)
     .attr("dy", ".71em")
     .style("text-anchor", "end")
-    .text("Temperature (F)");
+    .text("Temperature (" + units + ")");
   
   // draw lower x axis
   lower.append("g")
@@ -268,7 +274,7 @@ d3.tsv("fetch.php?hrs=" + hours, function(error, data) {
     .attr("stroke-width", 1)
     .attr("opacity", 0.1) 
     .append("svg:title").text(function(d) {
-      return format(d.date) + "\n" + d.val + "\u00B0 F";
+      return format(d.date) + "\n" + d.val + "\u00B0 " + units;
     });
   
   // draw the d3 pan/zoom "brush" object
